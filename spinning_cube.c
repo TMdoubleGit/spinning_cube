@@ -6,7 +6,8 @@ float A, B, C;
 
 float cubeWidth = 10;
 float width = 160, height = 44;
-float zBuffer = [160 * 44];
+float zBuffer[160 * 44];
+char buffer[160*44];
 int backgroundASCIICode = ' ';
 int distanceFromCam = 60;
 float K1 = 40;
@@ -16,6 +17,7 @@ float incrementSpeed = 0.6;
 float x, y, z;
 float ooz;
 int xp, yp;
+int idx;
 
 float calculateX(int i, int j, int k) {
     return j * sin(A) * sin(B) * cos(C) - k * cos(A) * sin(B) * cos(C) +
@@ -43,7 +45,7 @@ void calculateForSurface(float cubeX, float cubeY, float cubeZ, int ch) {
     idx = xp + yp * width;
     if (idx>=0 && idx < width * height) {
         if(ooz > zBuffer[idx]) {
-            zBuffer[idx] = oox;
+            zBuffer[idx] = ooz;
             buffer[idx] = ch;
         }
     }
@@ -59,7 +61,13 @@ int main (){
             for (float cubeY = - cubeWidth; cubeY < cubeWidth; cubeY += incrementSpeed) {
                 calculateForSurface(cubeX, cubeY, -cubeWidth, '#');
             }
-        }   
+        }
+        printf("\x1b[H");
+        for (int k = 0; k < width * height; k++){
+            putchar(k % width ? buffer[k] : 10);
+        }
+        A += 0.005;
+        B += 0.005;  
     }
-    return 0
+    return 0;
 }
